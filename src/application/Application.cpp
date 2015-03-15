@@ -19,9 +19,8 @@ void Application::initialize()
 	
 	a.addPoint(sf::Vector2f(0, 0));
 	a.addPoint(sf::Vector2f(50, 0));
-	a.addPoint(sf::Vector2f(75, 50));
-	a.addPoint(sf::Vector2f(80, 100));
-	a.addPoint(sf::Vector2f(40, 110));
+	a.addPoint(sf::Vector2f(50, 50));
+	a.addPoint(sf::Vector2f(0, 50));
 	a.offset(100, 100);
 	a.constructEdges();
 
@@ -32,9 +31,9 @@ void Application::initialize()
 
 	b.addPoint(sf::Vector2f(0, 0));
 	b.addPoint(sf::Vector2f(50, 0));
-	b.addPoint(sf::Vector2f(75, 50));
+	b.addPoint(sf::Vector2f(150, 50));
 	b.addPoint(sf::Vector2f(80, 100));
-	b.addPoint(sf::Vector2f(40, 110));
+	b.addPoint(sf::Vector2f(-10, 75));
 	b.offset(150, 100);
 	b.constructEdges();
 
@@ -89,30 +88,32 @@ void Application::update(sf::Time & p_deltaTime)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		a.offset(0, -5);
-		_a.move(0, -5);
+		a.offset(0, -2.5f);
+		_a.move(0, -2.5f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
-		a.offset(0, 5);
-		_a.move(0, 5);
+		a.offset(0, 2.5f);
+		_a.move(0, 2.5f);
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		a.offset(-5, 0);
-		_a.move(-5, 0);
+		a.offset(-2.5f, 0);
+		_a.move(-2.5f, 0);
 	}
 		
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		a.offset(5, 0);
-		_a.move(5, 0);
+		a.offset(2.5f, 0);
+		_a.move(2.5f, 0);
 	}
 
-	_b.setFillColor(math::intersect(a, b, sf::Vector2f(0, 0)).intersect ? sf::Color(255, 0, 0):sf::Color(0, 255, 0));
-	_a.setFillColor(math::intersect(a, b, sf::Vector2f(0, 0)).intersect ? sf::Color(255, 0, 0):sf::Color(0, 255, 0));
+	bool intersect = math::intersect(a, b, sf::Vector2f(0, 0)).intersect;
+
+	_b.setFillColor(intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+	_a.setFillColor(intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
 }
 
 void Application::render()
