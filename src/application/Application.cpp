@@ -18,9 +18,10 @@ void Application::initialize()
 	m_window.create(sf::VideoMode(1600, 900), "Convex-Polygon-Collision-Detection", sf::Style::Close, settings);
 	
 	a.addPoint(sf::Vector2f(0, 0));
+	a.addPoint(sf::Vector2f(25, -10));
 	a.addPoint(sf::Vector2f(50, 0));
 	a.addPoint(sf::Vector2f(50, 50));
-	a.addPoint(sf::Vector2f(0, 50));
+	a.addPoint(sf::Vector2f(0, 75));
 	a.offset(100, 100);
 	a.constructEdges();
 
@@ -30,10 +31,10 @@ void Application::initialize()
 	_a.setOutlineColor(sf::Color::Red);
 
 	b.addPoint(sf::Vector2f(0, 0));
-	b.addPoint(sf::Vector2f(50, 0));
-	b.addPoint(sf::Vector2f(150, 50));
-	b.addPoint(sf::Vector2f(80, 100));
-	b.addPoint(sf::Vector2f(-10, 75));
+	b.addPoint(sf::Vector2f(500, 0));
+	b.addPoint(sf::Vector2f(550, 75));
+	b.addPoint(sf::Vector2f(275, 100));
+	b.addPoint(sf::Vector2f(10, 45));
 	b.offset(150, 100);
 	b.constructEdges();
 
@@ -86,34 +87,41 @@ void Application::handleEvents()
 
 void Application::update(sf::Time & p_deltaTime)
 {
+	sf::Vector2f velocity = sf::Vector2f(0, 0);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		a.offset(0, -2.5f);
-		_a.move(0, -2.5f);
+		velocity.y = -2.5f;
 	}
-
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
-		a.offset(0, 2.5f);
-		_a.move(0, 2.5f);
+		velocity.y = 2.5f;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		a.offset(-2.5f, 0);
-		_a.move(-2.5f, 0);
+		velocity.x = -2.5f;
 	}
-		
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		a.offset(2.5f, 0);
-		_a.move(2.5f, 0);
+		velocity.x = 2.5f;
 	}
 
-	bool intersect = math::intersect(a, b, sf::Vector2f(0, 0)).intersect;
+	if (velocity != sf::Vector2f(0, 0))
+	{
+		auto intersect = math::intersect(a, b, velocity);
+		sf::Vector2f translation;
 
-	_b.setFillColor(intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
-	_a.setFillColor(intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+		if (intersect.willIntersect)
+			translation = sf::Vector2f(velocity.x + intersect.minimumTranslationVector.x, velocity.y + intersect.minimumTranslationVector.y);
+		else
+			translation = velocity;
+
+		a.offset(translation.x, translation.y);
+		_a.move(translation.x, translation.y);
+
+		_b.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+		_a.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+	}
 }
 
 void Application::render()

@@ -48,8 +48,6 @@ namespace math
 		return (T)(std::sqrt(std::pow(vector.x, 2) + std::pow(vector.y, 2)));
 	}
 
-	void normalize(sf::Vector2f& vector);
-
 	class Polygon
 	{
 	private:
@@ -96,6 +94,19 @@ namespace math
 			return m_edges[index];
 		}
 
+		sf::Vector2f getCenter() const
+		{
+			float x = 0, y = 0;
+			
+			for (int i = 0; i < m_points.size(); ++i)
+			{
+				x += m_points[i].x;
+				y += m_points[i].y;
+			}
+
+			return sf::Vector2f(x/(float)m_points.size(), y/(float)m_points.size());
+		}
+
 		void offset(const float& x, const float& y)
 		{
 			for (int i = 0; i < m_points.size(); ++i)
@@ -121,6 +132,7 @@ namespace math
 		sf::Vector2f minimumTranslationVector;
 	};
 
+	void normalize(sf::Vector2f& vector);
 	void projectPolygon(const sf::Vector2f& axis, const Polygon& polygon, float& min, float& max);
 	float intervalDistance(const float& minA, const float& maxA, const float& minB, const float& maxB);
 	Intersection intersect(const Polygon& a, const Polygon& b, const sf::Vector2f& velocity);

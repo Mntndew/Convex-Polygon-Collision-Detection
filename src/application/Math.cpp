@@ -1,4 +1,5 @@
 #include "Math.hpp"
+#include <iostream>
 
 
 namespace math
@@ -39,28 +40,58 @@ namespace math
 	{
 		Intersection result{true, true, {0, 0}};
 
-		int edgeCountA = a.getEdgeCount();
-		int edgeCountB = b.getEdgeCount();
 		float minIntervalDistance = std::numeric_limits<float>::infinity();
-		sf::Vector2f translationAxis, edge;
+		sf::Vector2f translationAxis, edge, centerA = a.getCenter(), centerB = b.getCenter();
 
-		for (int edgeIndex = 0; edgeIndex < edgeCountA + edgeCountB; ++edgeIndex)
+		for (int edgeIndex = 0; edgeIndex < a.getEdgeCount() + b.getEdgeCount(); edgeIndex++)
 		{
-			if (edgeIndex < edgeCountA)
+			if (edgeIndex < a.getEdgeCount())
 				edge = a.getEdge(edgeIndex);
 			else
-				edge = b.getEdge(edgeIndex - edgeCountA);
+				edge = b.getEdge(edgeIndex - a.getEdgeCount());
 
 			sf::Vector2f axis = sf::Vector2f(-edge.y, edge.x);
 			math::normalize(axis);
 
-			float minA = 0, minB = 0, maxA = 0, maxB = 0;
+			float minA = 0; float minB = 0; float maxA = 0; float maxB = 0;
 			math::projectPolygon(axis, a, minA, maxA);
 			math::projectPolygon(axis, b, minB, maxB);
 
 			if (math::intervalDistance(minA, maxA, minB, maxB) > 0)
 				result.intersect = false;
+
+			float velocityProjection = math::dotProduct<float>(axis, velocity);
+
+			if (velocityProjection < 0)
+				minA += velocityProjection;
+			else
+				maxA += velocityProjection;
+
+			float intervalDistance = math::intervalDistance(minA, maxA, minB, maxB);
+
+			if (intervalDistance > 0)
+				result.willIntersect = false;
+
+			if (!result.intersect && !result.willIntersect)
+				break;
+
+			intervalDistance = std::abs(intervalDistance);
+
+			if (intervalDistance < minIntervalDistance)
+			{
+				minIntervalDistance = intervalDistance;
+				translationAxis = axis;
+
+				sf::Vector2f d = sf::Vector2f(centerA.x - centerB.x, centerA.y - centerB.y);
+				if (math::dotProduct<float>(d, translationAxis) < 0)
+					translationAxis = sf::Vector2f(-translationAxis.x, -translationAxis.y);
+			}
 		}
+
+		if (result.willIntersect)
+			result.minimumTranslationVector = sf::Vector2f(translationAxis.x*minIntervalDistance, translationAxis.y*minIntervalDistance);
+
+//		std::cout << result.minimumTranslationVector.x << ':' << result.minimumTranslationVector.y << std::endl; 
 
 		return result;
 	}
