@@ -28,7 +28,7 @@ private:
 
 	sf::RenderWindow m_window;
 
-	math::Polygon a, b;
-	sf::ConvexShape _a, _b;
+	math::Polygon a, b, c;
+	sf::ConvexShape _a, _b, _c;
 };
 

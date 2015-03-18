@@ -20,8 +20,9 @@ void Application::initialize()
 	a.addPoint(sf::Vector2f(0, 0));
 	a.addPoint(sf::Vector2f(25, -10));
 	a.addPoint(sf::Vector2f(50, 0));
+	a.addPoint(sf::Vector2f(60, 25));
 	a.addPoint(sf::Vector2f(50, 50));
-	a.addPoint(sf::Vector2f(0, 75));
+	a.addPoint(sf::Vector2f(0, 50));
 	a.offset(100, 100);
 	a.constructEdges();
 
@@ -43,6 +44,19 @@ void Application::initialize()
 		_b.setPoint(i, b.getPoint(i));
 	_b.setOutlineColor(sf::Color::Red);
 	
+	c.addPoint(sf::Vector2f(-50, 0));
+	c.addPoint(sf::Vector2f(60, 5));
+	c.addPoint(sf::Vector2f(500, 500));
+	c.addPoint(sf::Vector2f(400, 500));
+	c.addPoint(sf::Vector2f(100, 250));
+	c.offset(700, 100);
+	c.constructEdges();
+
+	_c.setPointCount(c.getPointCount());
+	for (int i = 0; i < c.getPointCount(); ++i)
+		_c.setPoint(i, c.getPoint(i));
+	_c.setOutlineColor(sf::Color::Red);
+
 	m_running = true;
 	m_active = true;
 	m_space = false;
@@ -90,20 +104,20 @@ void Application::update(sf::Time & p_deltaTime)
 	sf::Vector2f velocity = sf::Vector2f(0, 0);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 	{
-		velocity.y = -2.5f;
+		velocity.y = -5;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 	{
-		velocity.y = 2.5f;
+		velocity.y = 5;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		velocity.x = -2.5f;
+		velocity.x = -5;
 	}
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		velocity.x = 2.5f;
+		velocity.x = 5;
 	}
 
 	if (velocity != sf::Vector2f(0, 0))
@@ -116,11 +130,30 @@ void Application::update(sf::Time & p_deltaTime)
 		else
 			translation = velocity;
 
+		if (intersect.willIntersect)
+		{
+			translation.x = velocity.x + intersect.minimumTranslationVector.x;
+			translation.y = velocity.y + intersect.minimumTranslationVector.y;
+		}
+		
+		_a.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+		_b.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+
+		intersect = math::intersect(a, c, translation);
+
+		if (intersect.willIntersect)
+		{
+			translation.x += intersect.minimumTranslationVector.x;
+			translation.y += intersect.minimumTranslationVector.y;
+		}
+
 		a.offset(translation.x, translation.y);
 		_a.move(translation.x, translation.y);
 
-		_b.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
-		_a.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+		if (_a.getFillColor() != sf::Color(255, 0, 0, 100))
+			_a.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
+
+		_c.setFillColor(intersect.intersect ? sf::Color(255, 0, 0, 100):sf::Color(0, 255, 0, 100));
 	}
 }
 
@@ -129,6 +162,7 @@ void Application::render()
 	m_window.clear(sf::Color(46, 46, 46));
 	m_window.draw(_a);
 	m_window.draw(_b);
+	m_window.draw(_c);
 	m_window.display();
 }
 
