@@ -36,6 +36,32 @@ namespace math
 			return minA - maxB;
 	}
 
+	bool polygonIntersectsPolygon(const Polygon& a, const Polygon& b)
+	{
+		float minIntervalDistance = std::numeric_limits<float>::infinity();
+		sf::Vector2f translationAxis, edge, centerA = a.getCenter(), centerB = b.getCenter();
+
+		for (int edgeIndex = 0; edgeIndex < a.getEdgeCount() + b.getEdgeCount(); ++edgeIndex)
+		{
+			if (edgeIndex < a.getEdgeCount())
+				edge = a.getEdge(edgeIndex);
+			else
+				edge = b.getEdge(edgeIndex - a.getEdgeCount());
+
+			sf::Vector2f axis = sf::Vector2f(-edge.y, edge.x);
+			normalize(axis);
+
+			float minA = 0, minB = 0, maxA = 0, maxB = 0;
+			projectPolygon(axis, a, minA, maxA);
+			projectPolygon(axis, b, minB, maxB);
+
+			if (intervalDistance(minA, maxA, minB, maxB) >= 0)
+				return false;
+		}
+
+		return true;
+	}
+
 	Intersection intersect(const Polygon& a, const Polygon& b, const sf::Vector2f& velocity)
 	{
 		Intersection result{true, true, {0, 0}};

@@ -7,7 +7,10 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics.hpp>
 
-#include "Math.hpp"
+#include "actor/PlayerActor.hpp"
+#include "application/Math.hpp"
+#include "application/Camera.hpp"
+#include "world/World.hpp"
 
 
 class Application
@@ -27,8 +30,13 @@ private:
 	bool m_space, m_mouse;
 
 	sf::RenderWindow m_window;
+	sf::View m_view;
+	Camera m_camera;
 
-	math::Polygon a, b, c;
-	sf::ConvexShape _a, _b, _c;
+	std::shared_ptr<PlayerActor> m_playerActor;
+	World m_world;
+
+	std::vector<math::Polygon> b;
+	sf::ConvexShape _b;
 };
 
