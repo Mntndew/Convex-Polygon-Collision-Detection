@@ -23,6 +23,20 @@ void LifeActor::control(const float deltaTime)
 			m_velocity.y = -250;
 			m_counter = 0;
 		}
+		
+		auto it = m_jumpPoints.begin();
+		auto center = m_polygon.getCenter();
+
+		while (it != m_jumpPoints.end())
+		{
+			if (math::distance<float>(center, *it) <= 16)
+			{
+				m_velocity.y = -900;
+				m_jumpPoints.erase(it);
+			}
+			else
+				++it;
+		}
 	}
 
 	if (math::magnitude<float>(m_velocity) > 900)

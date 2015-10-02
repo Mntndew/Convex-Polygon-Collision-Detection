@@ -145,3 +145,17 @@ void Actor::setType(const ActorType& type)
 	m_type = type;
 }
 
+std::vector<sf::Vector2f> Actor::getJumpPoints() const
+{
+	return m_jumpPoints;
+}
+
+void Actor::clearJumpPoints()
+{
+	m_jumpPoints.clear();
+}
+
+void Actor::addJumpPoints(const std::vector<sf::Vector2f> jumpPoints)
+{
+	m_jumpPoints.insert(m_jumpPoints.end(), jumpPoints.begin(), jumpPoints.end());
+}

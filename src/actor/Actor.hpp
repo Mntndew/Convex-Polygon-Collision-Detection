@@ -57,6 +57,10 @@ public:
 	ActorType getType() const;
 	void setType(const ActorType& type);
 
+	std::vector<sf::Vector2f> getJumpPoints() const;
+	void clearJumpPoints();
+	void addJumpPoints(const std::vector<sf::Vector2f> jumpPoints);
+
 protected:
 	sf::Vector2f m_position, m_velocity;
 	math::Polygon m_polygon, m_bottom;
@@ -66,5 +70,7 @@ protected:
 	ActorId m_id;
 
 	ActorType m_type;
+
+	std::vector<sf::Vector2f> m_jumpPoints;
 };
 

@@ -18,7 +18,10 @@ void PlayerActor::control(const float deltaTime)
 	if (isColliding())
 	{
 		if (isGrounded() && sf::Keyboard::isKeyPressed(sf::Keyboard::W))
+		{
 			m_velocity.y -= 400;
+			m_jumpPoints.push_back(m_polygon.getCenter());
+		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
 		{
